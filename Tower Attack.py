@@ -45,7 +45,38 @@ class Player_Budget:
   def __repr__(self):
     return "Budget = ${budget}".format(budget = self.budget)
 
+# Define Turn Input Function:
+
+def turn_input(input):
+  if input == "1":
+    input = archer
+  elif input == "2":
+    input = soldier
+  elif input == "3":
+    input = catapult
+  elif turn == "9":
+    sys.exit("Good Bye!")
+  
+  if player_budget.budget >= input.cost:
+      tower.lose_health(input.damage)
+      player_budget.budget -= input.cost
+      if tower.health > 0:
+          player_turn()
+      else:
+          tower.alive = False
+          sys.exit(textwrap.dedent("""\
+          "Congratulations! Tower Destroyed!"
+          --------------------------------------------------------------------------------------
+          """))
+  else:
+      print(textwrap.dedent("""\
+      Not Enough Money!
+      --------------------------------------------------------------------------------------
+      """))
+      player_turn()
+
 # Initialize Instances:
+
 archer = Archer()
 soldier = Soldier()
 catapult = Catapult()
@@ -55,45 +86,23 @@ first_turn = True
 
 # Initialize Game:
 
-def initialize_game():
-  Title_Screen = True
-  while Title_Screen:
-    choice = hide_input(textwrap.dedent("""\
-        TOWER ATTACK:
-
-        Your objective is to destroy the enemy tower using your budget to purchase attackers! 
-
-        (Note: Your input will not be visible for aesthetic purposes)
-
-        Press 1 to get started!
-        Press 9 to exit at any time!
-        """)
-    )
-    
-    if choice == "1":
-      player_turn()
-      Title_Screen = False
-    elif choice == "9": 
-      sys.exit("Good Bye!")
-    else: print("Press 1 to get started!")
-
 def player_turn():
   if player_budget.budget < 25 : sys.exit(textwrap.dedent("""\
             Remaining Tower Health: {t_health}
             Budget too low! 
             GAME OVER
-            ----------------------------------------------------------------------
+            --------------------------------------------------------------------------------------
             """).format(t_health = tower.health))
   while player_budget.budget > 0:
     global first_turn
     if first_turn:
         turn = hide_input(textwrap.dedent("""\
-            ----------------------------------------------------------------------
+            --------------------------------------------------------------------------------------
             Tower Health = {tower_health}
             Budget = ${player_budget}
 
             Press 1 to use an Archer (${Archer_Cost}, DMG: {a_damage}), 2 to use a Soldier (${Soldier_Cost}, DMG: {s_damage}), or 3 to use a Catapult (${Catapult_Cost}, DMG: {c_damage})!
-            ----------------------------------------------------------------------
+            --------------------------------------------------------------------------------------
             """).format(
                 Archer_Cost=archer.cost,
                 Soldier_Cost=soldier.cost,
@@ -111,7 +120,7 @@ def player_turn():
             Budget = ${player_budget}
 
             1 = Archer (${Archer_Cost}, DMG: {a_damage}), 2 = Soldier (${Soldier_Cost}, DMG: {s_damage}), 3 = Catapult (${Catapult_Cost}, DMG: {c_damage})
-            ----------------------------------------------------------------------
+            --------------------------------------------------------------------------------------
             """).format(
                 Archer_Cost=archer.cost,
                 Soldier_Cost=soldier.cost,
@@ -122,63 +131,38 @@ def player_turn():
                 s_damage = soldier.damage,
                 c_damage = catapult.damage
             ))
-    if turn == "9":
+
+    turn_input(turn)
+
+def initialize_game():
+  Title_Screen = True
+  while Title_Screen:
+    choice = hide_input(textwrap.dedent("""\
+        -----------------------------------------------------------------------------------------------
+        #########                                     ########                                
+            #    ####### #     # ####### #######      #      # ####### ####### ####### ####### #     #
+            #    #     # #     # #       #    #       ########    #       #    #     # #       #   #  
+            #    #     # #  #  # #####   # # #        #      #    #       #    ####### #       # #       
+            #    #     # # # # # #       #    #       #      #    #       #    #     # #       #   #  
+            #    #######  #   #  ####### #     #      #      #    #       #    #     # ####### #     #
+        -----------------------------------------------------------------------------------------------
+        
+        Your objective is to destroy the enemy tower using your budget to purchase attackers! 
+
+        (Note: Your input will not be visible for aesthetic purposes)
+
+        Press 1 to get started!
+        Press 9 to exit at any time!
+        """)
+    )
+    
+    if choice == "1":
+      player_turn()
+      Title_Screen = False
+    elif choice == "9": 
       sys.exit("Good Bye!")
-    if turn == "1":
-        if player_budget.budget >= archer.cost:
-            tower.lose_health(archer.damage)
-            player_budget.budget -= archer.cost
-            if tower.health > 0:
-                player_turn()
-            else:
-                tower.alive = False
-                sys.exit(textwrap.dedent("""\
-                "Congratulations! Tower Destroyed!"
-                ----------------------------------------------------------------------
-                """))
-        else:
-            print(textwrap.dedent("""\
-            Not Enough Money!
-            -------------------------------------------------------------------
-            """))
-            player_turn()
-    elif turn == "2":
-        if player_budget.budget >= soldier.cost:
-            tower.lose_health(soldier.damage)
-            player_budget.budget -= soldier.cost
-            if tower.health > 0:
-                player_turn()
-            else:
-                tower.alive = False
-                sys.exit(textwrap.dedent("""\
-                "Congratulations! Tower Destroyed!"
-                ----------------------------------------------------------------------
-                """))
-        else:
-            print(textwrap.dedent("""\
-            Not Enough Money!
-            -------------------------------------------------------------------
-            """))
-            player_turn()
-    elif turn == "3":
-        if player_budget.budget >= catapult.cost:
-            tower.lose_health(catapult.damage)
-            player_budget.budget -= catapult.cost
-            if tower.health > 0:
-                player_turn()
-            else:
-                tower.alive = False
-                sys.exit(textwrap.dedent("""\
-                "Congratulations! Tower Destroyed!"
-                ----------------------------------------------------------------------
-                """))
-        else:
-            print(textwrap.dedent("""\
-            Not Enough Money!
-            -------------------------------------------------------------------
-            """))
-            player_turn()
-    else: player_turn()
+    else: print("Press 1 to get started!")
+
 
 # Starting the game:
 
